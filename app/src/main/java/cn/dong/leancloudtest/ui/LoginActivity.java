@@ -1,4 +1,4 @@
-package cn.dong.leancloudtest;
+package cn.dong.leancloudtest.ui;
 
 import android.content.Intent;
 import android.graphics.Paint;
@@ -9,13 +9,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVAnalytics;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.SignUpCallback;
 
 import butterknife.InjectView;
-import cn.dong.leancloudtest.ui.BaseActivity;
+import cn.dong.leancloudtest.R;
+import cn.dong.leancloudtest.ui.common.BaseActivity;
 import cn.dong.leancloudtest.util.L;
 import cn.dong.leancloudtest.util.ToastUtils;
 
@@ -42,11 +44,12 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        AVAnalytics.trackAppOpened(getIntent());
         if (AVUser.getCurrentUser() != null) {
             launchMain();
         }
 
+        setTitle(R.string.welcome);
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,6 +83,12 @@ public class LoginActivity extends BaseActivity {
 
         mHintView.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
         mHintView.setText(R.string.login_hint);
+    }
+
+    @Override
+    protected void initActionBar() {
+        super.initActionBar();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
     private void launchMain() {

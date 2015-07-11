@@ -1,4 +1,4 @@
-package cn.dong.leancloudtest.ui;
+package cn.dong.leancloudtest.ui.common;
 
 import android.app.Activity;
 import android.os.Bundle;

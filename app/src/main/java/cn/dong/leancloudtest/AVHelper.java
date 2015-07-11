@@ -12,6 +12,7 @@ import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.SaveCallback;
 
+import cn.dong.leancloudtest.model.Post;
 import cn.dong.leancloudtest.model.Todo;
 
 /**
@@ -21,16 +22,20 @@ public class AVHelper {
     public static final String APP_ID = "ezjopb5y6zsnsyowuk2ezxt3xy1h0nq48xid89wxy57do9m8";
     public static final String APP_KEY = "hdks3uhht00ys9gt4yr0kwnc2ang40rt9giow1oo21f25w7q";
 
+    public static final String KEY_USER = "user";
+    public static final String KEY_UPDATE = "updatedAt";
+
     public static void init(Context context) {
         AVOSCloud.initialize(context, APP_ID, APP_KEY);
         // 启用崩溃错误报告
         AVAnalytics.enableCrashReport(context, true);
         // 注册子类
         AVObject.registerSubclass(Todo.class);
+        AVObject.registerSubclass(Post.class);
     }
 
     public static void createTodo(String title, SaveCallback saveCallback) {
-        final Todo todo = new Todo();
+        Todo todo = new Todo();
         todo.setUser(AVUser.getCurrentUser());
         todo.setTitle(title);
         todo.setACL(new AVACL(AVUser.getCurrentUser()));
@@ -51,8 +56,23 @@ public class AVHelper {
     public static void fetchTodos(FindCallback<Todo> findCallback) {
         AVQuery<Todo> query = AVQuery.getQuery(Todo.class);
         query.whereEqualTo("user", AVUser.getCurrentUser());
-        query.orderByAscending("updatedAt");
-        query.limit(1000);
+        query.orderByAscending(KEY_UPDATE);
+        query.limit(100);
         query.findInBackground(findCallback);
+    }
+
+    public static void createPost(String Content, SaveCallback callback) {
+        Post post = new Post();
+        post.setUser(AVUser.getCurrentUser());
+        post.setContent(Content);
+        post.saveInBackground(callback);
+    }
+
+    public static void findPost(FindCallback<Post> callback) {
+        AVQuery<Post> query = AVQuery.getQuery(Post.class);
+        query.include(KEY_USER);
+        query.orderByDescending(KEY_UPDATE);
+        query.limit(100);
+        query.findInBackground(callback);
     }
 }

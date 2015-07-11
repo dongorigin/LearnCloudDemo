@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Main-->
-    <color name="primary">#009688</color>
-    <color name="primaryDark">#00796b</color>
-    <color name="primaryLight">#7DD4B7</color>
-    <color name="accent">#00796b</color>
+    <color name="primary">#028090</color>
+    <color name="primaryDark">#006B77</color>
+    <color name="primaryLight">#E4FDE1</color>
+    <color name="accent">#F45B69</color>
     <color name="accentLight">#009688</color>
 
     <!-- 常用 -->
