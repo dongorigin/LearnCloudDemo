@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.avos.avoscloud.AVACL;
 import com.avos.avoscloud.AVAnalytics;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
@@ -12,8 +14,12 @@ import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.SaveCallback;
 
+import java.io.File;
+import java.io.IOException;
+
 import cn.dong.leancloudtest.model.Post;
 import cn.dong.leancloudtest.model.Todo;
+import cn.dong.leancloudtest.model.User;
 
 /**
  * author DONG 2015/7/5.
@@ -61,9 +67,33 @@ public class AVHelper {
         query.findInBackground(findCallback);
     }
 
+    public static void updateUserAvatar(final File imageFile, final SaveCallback callback) {
+        new Thread() {
+            @Override
+            public void run() {
+                User user = AVUser.getCurrentUser(User.class);
+                if (user == null) {
+                    return;
+                }
+                String fileName = System.currentTimeMillis() + ".png";
+                AVFile file;
+                try {
+                    file = AVFile.withFile(fileName, imageFile);
+                    file.save();
+                    user.setAvatar(file);
+                    user.saveInBackground(callback);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (AVException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
     public static void createPost(String Content, SaveCallback callback) {
         Post post = new Post();
-        post.setUser(AVUser.getCurrentUser());
+        post.setUser(AVUser.getCurrentUser(User.class));
         post.setContent(Content);
         post.saveInBackground(callback);
     }

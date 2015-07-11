@@ -30,7 +30,7 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.PostCreateActivity"
-            android:label="发布微博"
+            android:label="@string/release"
             android:screenOrientation="portrait"/>
     </application>
 

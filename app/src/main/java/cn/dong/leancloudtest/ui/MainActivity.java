@@ -1,6 +1,7 @@
 package cn.dong.leancloudtest.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -19,14 +20,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.SaveCallback;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
+import cn.dong.leancloudtest.AVHelper;
 import cn.dong.leancloudtest.R;
+import cn.dong.leancloudtest.model.User;
 import cn.dong.leancloudtest.ui.common.BaseActivity;
+import cn.dong.leancloudtest.util.ImageUtils;
 
 public class MainActivity extends BaseActivity {
     @InjectView(R.id.drawer_layout)
@@ -60,7 +68,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_action, menu);
-        return true;
+        return false;
     }
 
     @Override
@@ -70,9 +78,7 @@ public class MainActivity extends BaseActivity {
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.action_logout:
-                AVUser.logOut();
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
+                logout();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -90,7 +96,7 @@ public class MainActivity extends BaseActivity {
         mHeaderAvatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                ImageUtils.startImagePick(mContext);
             }
         });
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -100,6 +106,9 @@ public class MainActivity extends BaseActivity {
                     case R.id.nav_home:
                         break;
                     case R.id.nav_settings:
+                        break;
+                    case R.id.nav_logout:
+                        logout();
                         break;
                     default:
                         break;
@@ -138,9 +147,35 @@ public class MainActivity extends BaseActivity {
                 .show();
     }
 
+    private void logout() {
+        AVUser.logOut();
+        startActivity(new Intent(mContext, LoginActivity.class));
+        finish();
+    }
+
     private void updateDrawerHeader() {
         // avatar
-        mHeaderUsernameView.setText(AVUser.getCurrentUser().getUsername());
+        User user = AVUser.getCurrentUser(User.class);
+        Picasso.with(mContext)
+                .load(user.getAvatar().getUrl())
+                .into(mHeaderAvatarView);
+        mHeaderUsernameView.setText(user.getUsername());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ImageUtils.PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            AVHelper.updateUserAvatar(new File(uri.getPath()), new SaveCallback() {
+                @Override
+                public void done(AVException e) {
+                    if (e == null) {
+                        updateDrawerHeader();
+                    }
+                }
+            });
+        }
     }
 
     static class MainPagerAdapter extends FragmentPagerAdapter {
