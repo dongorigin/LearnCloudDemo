@@ -5,7 +5,7 @@
     <color name="primaryDark">#006B77</color>
     <color name="primaryLight">#E4FDE1</color>
     <color name="accent">#F45B69</color>
-    <color name="accentLight">#009688</color>
+    <color name="window_background">#FFF5F5F5</color>
 
     <!-- 常用 -->
     <color name="transparent">#00000000</color>
