@@ -8,6 +8,7 @@ import com.avos.avoscloud.AVObject;
  */
 @AVClassName("Post")
 public class Post extends AVObject {
+
     public void setUser(User user) {
         put("user", user);
     }

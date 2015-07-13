@@ -16,4 +16,8 @@ public class User extends AVUser {
         put("avatar", file);
     }
 
+    public String getAvatarUrl() {
+        return getAvatar() != null ? getAvatar().getUrl() : "";
+    }
+
 }

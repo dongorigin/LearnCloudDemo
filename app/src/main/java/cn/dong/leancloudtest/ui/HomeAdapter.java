@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cn.dong.leancloudtest.R;
@@ -35,9 +33,7 @@ public class HomeAdapter extends BaseAdapter<Post, HomeAdapter.HomeViewHolder> {
     @Override
     public void onBindViewHolder(HomeViewHolder holder, int position) {
         Post item = getItem(position);
-        Picasso.with(holder.itemView.getContext())
-                .load(item.getUser().getAvatar().getUrl())
-                .into(holder.avatarView);
+        UserUtils.setUserAvatar(holder.itemView.getContext(), holder.avatarView, item.getUser());
         holder.usernameView.setText(item.getUser().getUsername());
         holder.timeView.setText(DateUtils.getTimeByDate(item.getUpdatedAt()));
         holder.contentView.setText(item.getContent());

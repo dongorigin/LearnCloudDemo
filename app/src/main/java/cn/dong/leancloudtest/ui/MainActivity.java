@@ -23,7 +23,6 @@ import android.widget.TextView;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.SaveCallback;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -157,9 +156,7 @@ public class MainActivity extends BaseActivity {
 
     private void updateDrawerHeader() {
         User user = AVUser.getCurrentUser(User.class);
-        Picasso.with(mContext)
-                .load(user.getAvatar().getUrl())
-                .into(mHeaderAvatarView);
+        UserUtils.setUserAvatar(mContext, mHeaderAvatarView, user);
         mHeaderUsernameView.setText(user.getUsername());
     }
 
