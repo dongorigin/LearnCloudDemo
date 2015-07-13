@@ -36,6 +36,7 @@
     <string name="release_failure">发布失败</string>
 
     <!-- -->
+    <string name="avatar_update_success">头像更改成功</string>
     <string name="post_create_title">发布状态</string>
 
 </resources>

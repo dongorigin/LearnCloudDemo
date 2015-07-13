@@ -11,11 +11,9 @@ public class ImageUtils {
 
     public static void startImagePick(Activity activity) {
         Intent intent = new Intent();
-        // Show only images, no videos or anything else
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        // Always show the chooser (if there are multiple options available)
-        activity.startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+        activity.startActivityForResult(Intent.createChooser(intent, "选择图片"), PICK_IMAGE_REQUEST);
     }
 
 }

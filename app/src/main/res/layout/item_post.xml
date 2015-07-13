@@ -19,8 +19,9 @@
             android:id="@+id/avatar"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:scaleType="centerCrop"
             app:riv_oval="true"
-            toolds:src="@drawable/ic_account_circle_black_18dp"/>
+            toolds:src="@drawable/abc_list_selector_disabled_holo_dark"/>
 
         <TextView
             android:id="@+id/username"

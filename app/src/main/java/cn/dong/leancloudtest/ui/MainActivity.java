@@ -34,7 +34,9 @@ import cn.dong.leancloudtest.AVHelper;
 import cn.dong.leancloudtest.R;
 import cn.dong.leancloudtest.model.User;
 import cn.dong.leancloudtest.ui.common.BaseActivity;
+import cn.dong.leancloudtest.util.FileUtils;
 import cn.dong.leancloudtest.util.ImageUtils;
+import cn.dong.leancloudtest.util.ToastUtils;
 
 public class MainActivity extends BaseActivity {
     @InjectView(R.id.drawer_layout)
@@ -154,7 +156,6 @@ public class MainActivity extends BaseActivity {
     }
 
     private void updateDrawerHeader() {
-        // avatar
         User user = AVUser.getCurrentUser(User.class);
         Picasso.with(mContext)
                 .load(user.getAvatar().getUrl())
@@ -167,10 +168,15 @@ public class MainActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ImageUtils.PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
-            AVHelper.updateUserAvatar(new File(uri.getPath()), new SaveCallback() {
+            String imagePath = FileUtils.getPath(mContext, uri);
+            if (imagePath == null) {
+                return;
+            }
+            AVHelper.updateUserAvatar(new File(imagePath), new SaveCallback() {
                 @Override
                 public void done(AVException e) {
                     if (e == null) {
+                        ToastUtils.shortT(mContext, R.string.avatar_update_success);
                         updateDrawerHeader();
                     }
                 }
