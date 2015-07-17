@@ -6,12 +6,14 @@ import com.avos.avoscloud.AVACL;
 import com.avos.avoscloud.AVAnalytics;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.SaveCallback;
 
 import java.io.File;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import cn.dong.leancloudtest.model.Post;
 import cn.dong.leancloudtest.model.Todo;
 import cn.dong.leancloudtest.model.User;
+import cn.dong.leancloudtest.ui.LoginActivity;
 
 /**
  * author DONG 2015/7/5.
@@ -33,11 +36,30 @@ public class AVHelper {
 
     public static void init(Context context) {
         AVOSCloud.initialize(context, APP_ID, APP_KEY);
+        AVOSCloud.setDebugLogEnabled(BuildConfig.DEBUG);
         // 启用崩溃错误报告
         AVAnalytics.enableCrashReport(context, true);
         // 注册子类
         AVObject.registerSubclass(Todo.class);
         AVObject.registerSubclass(Post.class);
+    }
+
+    public static void initPush(Context context) {
+        PushService.setDefaultPushCallback(context, LoginActivity.class);
+        PushService.subscribe(context, "public", LoginActivity.class);
+        AVInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
+                    User user = AVUser.getCurrentUser(User.class);
+                    user.setInstallationId(installationId);
+                    user.saveInBackground();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public static void createTodo(String title, SaveCallback saveCallback) {
