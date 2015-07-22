@@ -1,5 +1,6 @@
 package cn.dong.leancloudtest.ui;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +20,8 @@ import cn.dong.leancloudtest.util.DateUtils;
  */
 public class HomeAdapter extends BaseAdapter<Post, HomeAdapter.HomeViewHolder> {
 
-    @Override
-    public int getItemCount() {
-        return mData.size();
+    public HomeAdapter(Context context) {
+        super(context);
     }
 
     @Override

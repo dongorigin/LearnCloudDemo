@@ -69,7 +69,7 @@ public class HomeFragment extends BaseFragment {
 
     private void setupRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new HomeAdapter();
+        mAdapter = new HomeAdapter(mContext);
         mRecyclerView.setAdapter(mAdapter);
     }
 

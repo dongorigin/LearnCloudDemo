@@ -35,6 +35,10 @@
             android:label="@string/post_create_title"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateVisible"/>
+        <activity
+            android:name=".ui.ChatActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible"/>
 
         <service
             android:name="com.avos.avoscloud.PushService"

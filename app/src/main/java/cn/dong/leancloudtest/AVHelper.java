@@ -127,4 +127,9 @@ public class AVHelper {
         query.limit(100);
         query.findInBackground(callback);
     }
+
+    public static void findUsers(FindCallback<User> callback) {
+        AVQuery<User> query = AVUser.getUserQuery(User.class);
+        query.findInBackground(callback);
+    }
 }
