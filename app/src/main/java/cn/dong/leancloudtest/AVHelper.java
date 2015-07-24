@@ -15,6 +15,7 @@ import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.im.v2.AVIMClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,11 +24,13 @@ import cn.dong.leancloudtest.model.Post;
 import cn.dong.leancloudtest.model.Todo;
 import cn.dong.leancloudtest.model.User;
 import cn.dong.leancloudtest.ui.LoginActivity;
+import cn.dong.leancloudtest.util.L;
 
 /**
  * author DONG 2015/7/5.
  */
 public class AVHelper {
+    private static final String TAG = AVHelper.class.getSimpleName();
     public static final String APP_ID = "ezjopb5y6zsnsyowuk2ezxt3xy1h0nq48xid89wxy57do9m8";
     public static final String APP_KEY = "hdks3uhht00ys9gt4yr0kwnc2ang40rt9giow1oo21f25w7q";
 
@@ -61,6 +64,22 @@ public class AVHelper {
             }
         });
     }
+
+    public static boolean filterException(Exception e) {
+        if (e != null) {
+            e.printStackTrace();
+            L.d(TAG, e.getMessage());
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static AVIMClient getIMClient() {
+        return AVIMClient.getInstance(AVUser.getCurrentUser().getObjectId());
+    }
+
+
 
     public static void createTodo(String title, SaveCallback saveCallback) {
         Todo todo = new Todo();
@@ -132,4 +151,5 @@ public class AVHelper {
         AVQuery<User> query = AVUser.getUserQuery(User.class);
         query.findInBackground(callback);
     }
+
 }

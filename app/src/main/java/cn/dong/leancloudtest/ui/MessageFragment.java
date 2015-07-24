@@ -13,9 +13,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.im.v2.AVIMClient;
+import com.avos.avoscloud.im.v2.AVIMConversation;
+import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
+import com.avos.avoscloud.im.v2.callback.AVIMConversationCreatedCallback;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -24,6 +32,7 @@ import cn.dong.leancloudtest.R;
 import cn.dong.leancloudtest.model.User;
 import cn.dong.leancloudtest.ui.common.BaseAdapter;
 import cn.dong.leancloudtest.ui.common.BaseFragment;
+import cn.dong.leancloudtest.util.L;
 
 /**
  * @author dong on 15/7/11.
@@ -46,7 +55,7 @@ public class MessageFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         setupRefreshLayout();
         setupRecyclerView();
-        findData();
+        setupIM();
     }
 
     private void setupRefreshLayout() {
@@ -63,6 +72,32 @@ public class MessageFragment extends BaseFragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new MessageAdapter(mContext);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void setupIM() {
+        AVIMClient imClient = AVHelper.getIMClient();
+        imClient.open(new AVIMClientCallback() {
+            @Override
+            public void done(AVIMClient client, AVException e) {
+                if (AVHelper.filterException(e)) {
+                    findData();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        AVIMClient imClient = AVHelper.getIMClient();
+        imClient.close(new AVIMClientCallback() {
+            @Override
+            public void done(AVIMClient avimClient, AVException e) {
+                if (AVHelper.filterException(e)) {
+                    L.d(TAG, "退出连接");
+                }
+            }
+        });
     }
 
     private void findData() {
@@ -92,9 +127,32 @@ public class MessageFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            User user = getItem(position);
+            final User user = getItem(position);
             UserUtils.setUserAvatar(holder.itemView.getContext(), holder.avatarView, user);
             holder.usernameView.setText(user.getUsername());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+
+                    List<String> conversationMembers = new ArrayList<>();
+                    conversationMembers.add(AVUser.getCurrentUser().getObjectId());
+                    conversationMembers.add(user.getObjectId());
+                    // 我们给对话增加一个自定义属性 type，表示单聊还是群聊
+                    // int ConversationType_OneOne = 0; // 两个人之间的单聊
+                    // int ConversationType_Group = 1;  // 多人之间的群聊
+                    Map<String, Object> attr = new HashMap<>();
+                    attr.put("type", 0);
+                    AVHelper.getIMClient().createConversation(conversationMembers, attr, new AVIMConversationCreatedCallback() {
+                        @Override
+                        public void done(AVIMConversation conversation, AVException e) {
+                            if (conversation != null) {
+                                ChatActivity.startActivity(mContext, user.getUsername(), conversation.getConversationId());
+                            }
+                        }
+                    });
+                }
+            });
         }
     }
 
