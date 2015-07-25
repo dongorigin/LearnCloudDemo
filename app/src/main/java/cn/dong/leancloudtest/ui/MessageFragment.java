@@ -13,21 +13,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.im.v2.AVIMClient;
 import com.avos.avoscloud.im.v2.AVIMConversation;
 import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
 import com.avos.avoscloud.im.v2.callback.AVIMConversationCreatedCallback;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cn.dong.leancloudtest.AVHelper;
+import cn.dong.leancloudtest.ConversationManager;
 import cn.dong.leancloudtest.R;
 import cn.dong.leancloudtest.model.User;
 import cn.dong.leancloudtest.ui.common.BaseAdapter;
@@ -128,35 +125,14 @@ public class MessageFragment extends BaseFragment {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             final User user = getItem(position);
+            holder.user = user;
             UserUtils.setUserAvatar(holder.itemView.getContext(), holder.avatarView, user);
             holder.usernameView.setText(user.getUsername());
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-
-                    List<String> conversationMembers = new ArrayList<>();
-                    conversationMembers.add(AVUser.getCurrentUser().getObjectId());
-                    conversationMembers.add(user.getObjectId());
-                    // 我们给对话增加一个自定义属性 type，表示单聊还是群聊
-                    // int ConversationType_OneOne = 0; // 两个人之间的单聊
-                    // int ConversationType_Group = 1;  // 多人之间的群聊
-                    Map<String, Object> attr = new HashMap<>();
-                    attr.put("type", 0);
-                    AVHelper.getIMClient().createConversation(conversationMembers, attr, new AVIMConversationCreatedCallback() {
-                        @Override
-                        public void done(AVIMConversation conversation, AVException e) {
-                            if (conversation != null) {
-                                ChatActivity.startActivity(mContext, user.getUsername(), conversation.getConversationId());
-                            }
-                        }
-                    });
-                }
-            });
         }
+
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @InjectView(R.id.avatar)
         ImageView avatarView;
         @InjectView(R.id.username)
@@ -166,9 +142,27 @@ public class MessageFragment extends BaseFragment {
         @InjectView(R.id.content)
         TextView contentView;
 
+        User user;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.inject(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(final View v) {
+            if (user == null) {
+                return;
+            }
+            ConversationManager.startConversationWithOther(user, new AVIMConversationCreatedCallback() {
+                @Override
+                public void done(AVIMConversation conversation, AVException e) {
+                    if (conversation != null) {
+                        ChatActivity.startActivity(v.getContext(), user.getUsername(), conversation.getConversationId());
+                    }
+                }
+            });
         }
     }
 

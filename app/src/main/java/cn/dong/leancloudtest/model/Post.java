@@ -8,13 +8,14 @@ import com.avos.avoscloud.AVObject;
  */
 @AVClassName("Post")
 public class Post extends AVObject {
+    public static final String KEY_USER = "user";
 
     public void setUser(User user) {
-        put("user", user);
+        put(KEY_USER, user);
     }
 
     public User getUser() {
-        return getAVUser("user", User.class);
+        return getAVUser(KEY_USER, User.class);
     }
 
     public void setContent(String content) {

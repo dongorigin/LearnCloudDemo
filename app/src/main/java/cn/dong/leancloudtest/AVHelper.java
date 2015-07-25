@@ -16,6 +16,8 @@ import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.SaveCallback;
 import com.avos.avoscloud.im.v2.AVIMClient;
+import com.avos.avoscloud.im.v2.AVIMMessageManager;
+import com.avos.avoscloud.im.v2.AVIMTypedMessage;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,9 +36,6 @@ public class AVHelper {
     public static final String APP_ID = "ezjopb5y6zsnsyowuk2ezxt3xy1h0nq48xid89wxy57do9m8";
     public static final String APP_KEY = "hdks3uhht00ys9gt4yr0kwnc2ang40rt9giow1oo21f25w7q";
 
-    public static final String KEY_USER = "user";
-    public static final String KEY_UPDATE = "updatedAt";
-
     public static void init(Context context) {
         AVOSCloud.initialize(context, APP_ID, APP_KEY);
         AVOSCloud.setDebugLogEnabled(BuildConfig.DEBUG);
@@ -45,6 +44,8 @@ public class AVHelper {
         // 注册子类
         AVObject.registerSubclass(Todo.class);
         AVObject.registerSubclass(Post.class);
+        // 注册MessageHandler
+        AVIMMessageManager.registerMessageHandler(AVIMTypedMessage.class, new MessageHandler(context));
     }
 
     public static void initPush(Context context) {
@@ -65,6 +66,15 @@ public class AVHelper {
         });
     }
 
+    public static String getIMClientId() {
+        AVUser user = AVUser.getCurrentUser();
+        return user != null ? user.getUsername() : "";
+    }
+
+    public static AVIMClient getIMClient() {
+        return AVIMClient.getInstance(AVUser.getCurrentUser().getUsername());
+    }
+
     public static boolean filterException(Exception e) {
         if (e != null) {
             e.printStackTrace();
@@ -74,12 +84,6 @@ public class AVHelper {
             return true;
         }
     }
-
-    public static AVIMClient getIMClient() {
-        return AVIMClient.getInstance(AVUser.getCurrentUser().getObjectId());
-    }
-
-
 
     public static void createTodo(String title, SaveCallback saveCallback) {
         Todo todo = new Todo();
@@ -103,7 +107,7 @@ public class AVHelper {
     public static void fetchTodos(FindCallback<Todo> findCallback) {
         AVQuery<Todo> query = AVQuery.getQuery(Todo.class);
         query.whereEqualTo("user", AVUser.getCurrentUser());
-        query.orderByAscending(KEY_UPDATE);
+        query.orderByAscending(Constants.UPDATED_AT);
         query.limit(100);
         query.findInBackground(findCallback);
     }
@@ -141,14 +145,15 @@ public class AVHelper {
 
     public static void findPost(FindCallback<Post> callback) {
         AVQuery<Post> query = AVQuery.getQuery(Post.class);
-        query.include(KEY_USER);
-        query.orderByDescending(KEY_UPDATE);
+        query.include(Post.KEY_USER);
+        query.orderByDescending(Constants.UPDATED_AT);
         query.limit(100);
         query.findInBackground(callback);
     }
 
     public static void findUsers(FindCallback<User> callback) {
         AVQuery<User> query = AVUser.getUserQuery(User.class);
+        query.whereNotEqualTo(Constants.OBJECT_ID, AVUser.getCurrentUser().getObjectId());
         query.findInBackground(callback);
     }
 

@@ -123,8 +123,10 @@ public class MainActivity extends BaseActivity {
 
     private void setupViewPager() {
         MainPagerAdapter adapter = new MainPagerAdapter(getSupportFragmentManager());
-        adapter.addPage(new HomeFragment(), "Home");
-        adapter.addPage(new MessageFragment(), "Message");
+        adapter.addPage(new HomeFragment(), "吐槽");
+        adapter.addPage(new MessageFragment(), "用户");
+//        adapter.addPage(new ConversationFragment(), "对话");
+        mViewPager.setOffscreenPageLimit(2);
         mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager);
     }
