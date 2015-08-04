@@ -1,4 +1,4 @@
-# LeanCloudDemo
+# LearnCloudDemo
 learn LeanCloud https://leancloud.cn/
 
 目标通过DEMO学习使用LeanCloud的几大模块
